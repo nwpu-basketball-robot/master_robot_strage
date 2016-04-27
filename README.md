@@ -5,18 +5,20 @@
 <p>------------------------------------------------开发区--------------------------------------------------</p>
 
 <p><font size="5px">robot_move_pkg</font></p>
+<p>
     <ul>
         <li>config.py............设置一些参数的配置文件</li>
         <li>move_a_distance.py...............移动一段指定距离</li>
         <li>turn_an_angular.py................旋转一个指定的角度</li>
         <li>move_to_a_point.py................移动到一个指定的点</li>
     </ul>
-
+</p>
 <p><font size="5px">robot_state_pkg</font></p>
+<p>
     <ul>
         <li>get_robot_position.py..............获得机器人当前位置信息</li>
     </ul>
-
+</p>
 
 <p>strage_test.py...............一个状态机测试程序</p>
 </br>
@@ -24,6 +26,7 @@
 </br>
 <p><font size="5px">2016-03测试情况</font></p>
     <p>测试人：liao-zhihan,hao</p>
+<p>
     <ul>
         <li>move_a_distance.py:</li>
         <p>&nbsp;&nbsp;&nbsp;行走不太直，行走距离为给定距离的2倍左右</p>
@@ -37,3 +40,4 @@
         <li>get_robot_position.py：</li>
         <p>&nbsp;&nbsp;&nbsp;测试成功，无误</p>
     </ul>
+</p>
