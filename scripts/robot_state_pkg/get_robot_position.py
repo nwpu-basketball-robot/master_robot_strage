@@ -1,8 +1,6 @@
-<<<<<<< HEAD
 #! /usr/bin/env python
 # author = rescuer_liao
 # get the current position of robot
-=======
 #!/usr/bin/env python
 #coding:utf-8
 
@@ -15,7 +13,6 @@
 #first_test_on_robot_date:2016-03
 #第一次测试通过
 
->>>>>>> d41aa20b485db43a3c212e87195b10342618c153
 
 import rospy
 import roslib
@@ -29,13 +26,10 @@ class robot_position_state(object):
     def __init__(self):
         self.base_frame = rospy.get_param("base_frame_name","base_link")
         self.odom_frame = rospy.get_param("odom_frame_name","odom")
-<<<<<<< HEAD
         self.tf_listener = tf.TransformListener()
-=======
         
 	#进行tf的初始化，若失败请检查odom到bask_link的TF
 	self.tf_listener = tf.TransformListener()
->>>>>>> d41aa20b485db43a3c212e87195b10342618c153
 
         rospy.loginfo("[robot_state_pkg]->robot_position_state module is waiting for the tf between"
                       " %s and %s "%(self.base_frame , self.odom_frame))
@@ -56,13 +50,9 @@ class robot_position_state(object):
                 rospy.logwarn('[robot_state_pkg]->robot_position_state module this information only '
                               'warn once ,please check the odom !!!')
 
-<<<<<<< HEAD
-=======
-
 	########################注：以下坐标获取均是通过tf实现####################################
 
 	#获取机器人当前的X，Y轴与方向
->>>>>>> d41aa20b485db43a3c212e87195b10342618c153
     def get_robot_current_x_y_w(self):
          t = self.tf_listener.getLatestCommonTime(self.base_frame, self.odom_frame)
          position, quaternion = self.tf_listener.lookupTransform(self.odom_frame , self.base_frame,t)
@@ -71,35 +61,26 @@ class robot_position_state(object):
 #         print 'x = ' ,position[0] ,'y = ', position[1],'yaw =', yaw
          return position[0],position[1],yaw
 
-<<<<<<< HEAD
     def get_robot_current_x_y(self):
         x , y , yaw = self.get_robot_current_x_y_w()
         return x,y
 
-=======
 	#获取机器人当前的X，Y值
     def get_robot_x_y(self):
         x , y , yaw = self.get_robot_current_x_y_w()
         return x,y
 
 	#获取机器人当前的X值
->>>>>>> d41aa20b485db43a3c212e87195b10342618c153
     def get_robot_current_x(self):
         x , y , yaw = self.get_robot_current_x_y_w()
         return x
 
-<<<<<<< HEAD
-=======
 	#获取机器人当前的Y值
->>>>>>> d41aa20b485db43a3c212e87195b10342618c153
     def get_robot_current_y(self):
         x , y , yaw = self.get_robot_current_x_y_w()
         return y
 
-<<<<<<< HEAD
-=======
 	#获取机器人当前的方向值
->>>>>>> d41aa20b485db43a3c212e87195b10342618c153
     def get_robot_current_yaw(self):
         x , y , yaw = self.get_robot_current_x_y_w()
         return yaw
@@ -107,9 +88,6 @@ class robot_position_state(object):
 if __name__ == '__main__':
     rospy.init_node('test')
     a = robot_position_state()
-<<<<<<< HEAD
     s = a.get_robot_current_x()
     print s
-=======
     a.get_robot_current_x()
->>>>>>> d41aa20b485db43a3c212e87195b10342618c153
