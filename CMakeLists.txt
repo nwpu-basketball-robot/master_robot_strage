@@ -3,7 +3,11 @@ project(basketball_strage)
 
 find_package(catkin REQUIRED COMPONENTS
   basketball_msgs
+<<<<<<< HEAD
 #  ros_smach
+=======
+  smach_ros
+>>>>>>> d41aa20b485db43a3c212e87195b10342618c153
   roscpp
   rospy
 )
