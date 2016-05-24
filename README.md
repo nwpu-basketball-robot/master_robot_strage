@@ -1,5 +1,5 @@
-<<<<<<< HEAD
 包含部分状态机以及移动铲子的接口
+这次添加了边直走边转角度的接口，以及找球，找定位柱的代码
 =======
 <h2>篮球机器人比赛用状态机</h2>
 <h1>队内人员请按规范书写此README！并且控制好分支和版本，确保无误后再上传master</h1>
@@ -14,6 +14,7 @@
         <li>move_a_distance.py...............移动一段指定距离</li>
         <li>turn_an_angular.py................旋转一个指定的角度</li>
         <li>move_to_a_point.py................移动到一个指定的点</li>
+        <li>linear_move.py....................边斜着走边转角度</li>
     </ul>
 </p>
 <p><font size="5px">robot_state_pkg</font></p>
@@ -22,7 +23,19 @@
         <li>get_robot_position.py..............获得机器人当前位置信息</li>
     </ul>
 </p>
-
+<p><font size="5px">ball_state_pkg</font></p>
+<p>
+    <ul>
+        <li>find_oneball_state.py..............获得一个球当前位置信息</li>
+        <li>find_twoball_state.py..............获得两个球当前位置以及色彩信息</li>
+    </ul>
+</p>
+<p><font size="5px">cylinder_state_pkg</font></p>
+<p>
+    <ul>
+        <li>find_cylinder_state.py..............获得定位柱的位置信息</li>
+    </ul>
+</p>
 <p>strage_test.py...............一个状态机测试程序</p>
 </br>
 <p>-------------------------------------------------测试区-------------------------------------------------</p>
@@ -44,4 +57,3 @@
         <p>&nbsp;&nbsp;&nbsp;测试成功，无误</p>
     </ul>
 </p>
->>>>>>> d41aa20b485db43a3c212e87195b10342618c153
