@@ -1,8 +1,9 @@
 #! /usr/bin/env python
+#coding:utf-8
 # author = rescuer_liao
 # get the current position of robot
 #!/usr/bin/env python
-#coding:utf-8
+
 
 #Team Unware Basketball Robot nwpu
 #获取机器人当前在全局坐标系中的X，Y值以及机器人的方向值（单位为弧度值）

@@ -1,9 +1,7 @@
 #!/usr/bin/env python
-<<<<<<< HEAD
+#coding:utf-8
 # author = hao , rescuer liao
 #send a angular to move
-=======
-#coding:utf-8
 
 #Team Unware Basketball Robot 
 #China , Xi'an ,NWPU
@@ -21,7 +19,6 @@
 #注意添加坐标获取模块路径到pth!                 #
 #################################################
 
->>>>>>> d41aa20b485db43a3c212e87195b10342618c153
 
 #append the robot state pkg to the python path
 import config
@@ -50,8 +47,10 @@ class turn_an_angular(object):
         rospy.loginfo('[robot_move_pkg]->move_an_angular will turn %s'%goal_angular)
         rospy.on_shutdown(self.brake) #callback function
         current_angular = start_angular = self.robot_state.get_robot_current_yaw()
-        rospy.on_shutdown(self.brake) #系统停止时，机器人急停
-        current_angular = start_angular = self.robot_state.get_robot_current_yaw()#获取当前机器人的角度
+		#系统停止时，机器人急停
+        rospy.on_shutdown(self.brake)
+        current_angular = start_angular = self.robot_state.get_robot_current_yaw()
+        #获取当前机器人的角度
         is_arrive_goal = False
         r = rospy.Rate(100)
         delta_angular = current_angular - start_angular
@@ -62,13 +61,15 @@ class turn_an_angular(object):
         move_velocity = g_msgs.Twist()
         while not rospy.is_shutdown() and not is_arrive_goal:
             if abs(delta_angular)<=delta_upper_limit and abs(delta_angular) >= delta_lower_limit:
-=======
-        delta_upper_limit = abs(goal_angular) + self.stop_tolerance #误差上限
-        delta_lower_limit = abs(goal_angular) - self.stop_tolerance #误差下限
+		#误差上限
+		delta_upper_limit = abs(goal_angular) + self.stop_tolerance
+        #误差下限
+        delta_lower_limit = abs(goal_angular) - self.stop_tolerance
 
         move_velocity = g_msgs.Twist()
         while not rospy.is_shutdown() and not is_arrive_goal:
-            if abs(delta_angular)<=delta_upper_limit and abs(delta_angular) >= delta_lower_limit: #没有到达目标
+        	#没有到达目标
+            if abs(delta_angular)<=delta_upper_limit and abs(delta_angular) >= delta_lower_limit:
                 self.brake()
                 is_arrive_goal = True
                 break
@@ -81,16 +82,9 @@ class turn_an_angular(object):
             delta_angular = self.robot_state.get_robot_current_yaw() - start_angular
             r.sleep()
 
-
     def turn(self , angular = 0.0):
+	    #正规化
         self.start_turn(self.normalize_angle(angular))
-
-            self.cmd_vel_pub.publish(move_velocity) #发送速度，使机器人旋转
-            delta_angular = self.robot_state.get_robot_current_yaw() - start_angular #获取还需移动的目标角度
-
-
-    def turn(self , angular = 0.0):
-        self.start_turn(self.normalize_angle(angular))#正规化
 
 	#将目标角度规范化，取最近的方向进行移动
 	#如：发送目标值200
