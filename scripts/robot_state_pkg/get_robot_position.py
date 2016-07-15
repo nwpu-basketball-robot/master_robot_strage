@@ -29,8 +29,8 @@ class robot_position_state(object):
         self.odom_frame = rospy.get_param("odom_frame_name","odom")
         self.tf_listener = tf.TransformListener()
         
-	#进行tf的初始化，若失败请检查odom到bask_link的TF
-	self.tf_listener = tf.TransformListener()
+        #进行tf的初始化，若失败请检查odom到bask_link的TF
+    	self.tf_listener = tf.TransformListener()
 
         rospy.loginfo("[robot_state_pkg]->robot_position_state module is waiting for the tf between"
                       " %s and %s "%(self.base_frame , self.odom_frame))
@@ -51,7 +51,7 @@ class robot_position_state(object):
                 rospy.logwarn('[robot_state_pkg]->robot_position_state module this information only '
                               'warn once ,please check the odom !!!')
 
-	########################注：以下坐标获取均是通过tf实现####################################
+########################注：以下坐标获取均是通过tf实现####################################
 
 	#获取机器人当前的X，Y轴与方向
     def get_robot_current_x_y_w(self):
@@ -62,27 +62,23 @@ class robot_position_state(object):
 #         print 'x = ' ,position[0] ,'y = ', position[1],'yaw =', yaw
          return position[0],position[1],yaw
 
+#获取机器人当前的X，Y值
     def get_robot_current_x_y(self):
         x , y , yaw = self.get_robot_current_x_y_w()
         return x,y
 
-	#获取机器人当前的X，Y值
-    def get_robot_x_y(self):
-        x , y , yaw = self.get_robot_current_x_y_w()
-        return x,y
-
-	#获取机器人当前的X值
+#获取机器人当前的X值
     def get_robot_current_x(self):
         x , y , yaw = self.get_robot_current_x_y_w()
         return x
 
-	#获取机器人当前的Y值
+#获取机器人当前的Y值
     def get_robot_current_y(self):
         x , y , yaw = self.get_robot_current_x_y_w()
         return y
 
-	#获取机器人当前的方向值
-    def get_robot_current_yaw(self):
+#获取机器人当前的方向值
+    def get_robot_current_w(self):
         x , y , yaw = self.get_robot_current_x_y_w()
         return yaw
 

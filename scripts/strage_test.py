@@ -1,8 +1,6 @@
 #!/usr/bin/env python
-<<<<<<< HEAD
 #author rescuer liao
 #get the current position of robot
-=======
 #coding:utf-8
 
 
@@ -14,20 +12,13 @@
 #first_debug_date=2016-03
 #第一次测试通过
 
->>>>>>> d41aa20b485db43a3c212e87195b10342618c153
-
 import rospy
 import smach
 import math
 import smach_ros
 from robot_move_pkg import move_a_distance
 from robot_move_pkg import turn_an_angular
-
-<<<<<<< HEAD
-=======
-
 #朝正前方移动一段距离
->>>>>>> d41aa20b485db43a3c212e87195b10342618c153
 class first_step(smach.State):
     def __init__(self):
         smach.State.__init__(self,outcomes=['successed','failed'])
@@ -38,11 +29,7 @@ class first_step(smach.State):
         self.move_cmd.move_to(x = 2.0)
         return 'successed'
 
-<<<<<<< HEAD
-
-=======
 #朝右边移动一段距离
->>>>>>> d41aa20b485db43a3c212e87195b10342618c153
 class second_step(smach.State):
     def __init__(self):
         smach.State.__init__(self,outcomes=['successed','failed'])
@@ -53,10 +40,7 @@ class second_step(smach.State):
         self.turn_cmd.move_to(y = 0.3)
         return 'successed'
 
-<<<<<<< HEAD
-=======
 #后退一段距离
->>>>>>> d41aa20b485db43a3c212e87195b10342618c153
 class third_step(smach.State):
     def __init__(self):
         smach.State.__init__(self,outcomes=['successed','failed'])

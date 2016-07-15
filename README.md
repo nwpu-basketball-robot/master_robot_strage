@@ -10,11 +10,21 @@
 <p><font size="5px">robot_move_pkg</font></p>
 <p>
     <ul>
-        <li>config.py............设置一些参数的配置文件</li>
-        <li>move_a_distance.py...............移动一段指定距离</li>
-        <li>turn_an_angular.py................旋转一个指定的角度</li>
-        <li>move_to_a_point.py................移动到一个指定的点</li>
-        <li>linear_move.py....................边斜着走边转角度</li>
+    	<li>interpolation_function .......... 插值函数</li>
+    	<ul>
+    		<li>spline_config.py ............... 插值参数</li>
+    		<li>growth_curve.py		............ 基于细菌生长曲线的速度插值 </li>
+    		<li>growth_curve_demo.jpg .......... 插值效果图</li>
+    	</ul>
+        <li>config.py............设置一些参数的配置文件 </li>
+        <li>move_a_distance.py...............移动一段指定距离 （进行速度插值平滑</li>
+        <li>turn_an_angular.py................旋转一个指定的角度（进行速度插值平滑）</li>
+        <li>linear_move.py....................边斜着走边转角度 (进行速度插值平滑)</li>
+        <li>low_speed_linear_move ............以较低的速度进行斜着跑 (没有进行速度插值)</li>
+        <li>move_in_robot  ...................在机器人坐标系下移动（进行速度插值平滑）</li>
+        <li>move_to_home  ....................接受图像传来的信息，进行回家速度的发送</li>
+        <li>go_along_circle ..................沿着圆弧跑</li>
+      	
     </ul>
 </p>
 <p><font size="5px">robot_state_pkg</font></p>
@@ -56,4 +66,25 @@
         <li>get_robot_position.py：</li>
         <p>&nbsp;&nbsp;&nbsp;测试成功，无误</p>
     </ul>
+</p>
+<p><font size="5px">2016-7-15测试情况</font></p>
+<p>
+	<ul>
+		<li>move_a_distance:</li>
+		<p>&nbsp;&nbsp;&nbsp;比较准，但是会略歪一点</p>
+		<li>turn_an_angular: </li>
+		<p>&nbsp;&nbsp;&nbsp;修复了因tf产生的问题，遗留问题也基本解决，但是陀螺仪容易掉</p>
+		<li>linear_move:</li>
+		<p>&nbsp;&nbsp;&nbsp;斜着跑；斜着跑转角度。都基本没有问题了；但是参数可能需要调整一下</p>
+		<li>get_robot_position:</li>
+		<p>&nbsp;&nbsp;&nbsp;测试无误</p>
+		<li>low_speed_linear_move:</li>
+		<p>&nbsp;&nbsp;&nbsp;基本无误</p>
+		<li>move_in_robot:</li>
+		<p>&nbsp;&nbsp;&nbsp;尚未进行大量测试</p>
+		<li>move_to_home:</li>
+		<p>&nbsp;&nbsp;&nbsp;尚未测试</p>
+		<li>go_along_circle:</li>
+		<p>&nbsp;&nbsp;&nbsp;尚未进行大量测试</p>
+	<ul>
 </p>

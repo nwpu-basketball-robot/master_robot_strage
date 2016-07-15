@@ -12,7 +12,7 @@ import  sys
 sys.path.append(config.robot_state_pkg_path)
 import robot_state_pkg.get_robot_position as robot_state#注意修改路径
 import turn_an_angular
-class var_speed_linear_move(object):
+class low_speed_linear_move(object):
     def __init__(self):
         rospy.loginfo('[robot_move_pkg]->linear_move is initial')
         #通过这个模块获取机器人当前姿态
@@ -27,7 +27,7 @@ class var_speed_linear_move(object):
         self.y_speed = 0.0
         self.w_speed = 0.0
         #设置移动过程中的速度
-        self.speed = config.linear_move_speed
+        self.speed = config.low_linear_speed
         
     def brake(self):#停止时的回调函数
         rospy.loginfo('The robot is stopping...')
@@ -103,11 +103,14 @@ class var_speed_linear_move(object):
     #提供给外部的接口
         rospy.loginfo('[robot_move_pkg]->linear_move will move to x_distance = %s'
                       'y_distance = %s, angular = %s'%(x,y,yaw))
-        self.start_run(x, y,yaw)
+        if x == 0.0 and y == 0:
+            self.accurate_turn_an_angular.turn(self.normalize_angle(yaw))
+        else:
+            self.start_run(x, y,yaw)
 
     #提供给外部改变直线移动速度的接口
-    def set_linear_speed(self,speed = 0):
-        self.speed = speed;
+    #def set_linear_speed(self,speed = 0):
+    #    self.speed = speed;
 		
 	
     def normalize_angle(self, angle):

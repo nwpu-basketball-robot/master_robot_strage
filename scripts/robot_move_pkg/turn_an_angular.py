@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 #coding:utf-8
-# author = hao , rescuer liao
-#send a angular to move
 
-#Team Unware Basketball Robot 
+#Team Unware Basketball Robot
 #China , Xi'an ,NWPU
 #外部发送一个弧度值，使机器人旋转相应的角度
 
@@ -18,8 +16,10 @@
 #################################################
 #注意添加坐标获取模块路径到pth!                 #
 #################################################
-
-
+#           tf这边返回的角度 是 -pi 到 pi
+#           所以在出现 -pi 越过 pi 时 会十分奇葩
+#           所以通过计算角度变化的累加值 避免出现这个情况
+#             2016-7-15 这个错误以修复
 #append the robot state pkg to the python path
 import config
 import math
@@ -32,61 +32,48 @@ import geometry_msgs.msg as g_msgs
 class turn_an_angular(object):
     def __init__(self):
         rospy.loginfo('[robot_move_pkg]->move_an_angular is initial')
-        rospy.loginfo('[robot_move_pkg]->move_an_angular is initial')
         self.robot_state = robot_state.robot_position_state()
         self.speed = config.turn_angular_speed
-        self.stop_tolerance = math.radians(config.turn_augular_stop_tolerance)
+        self.stop_tolerance = config.turn_augular_stop_tolerance
         self.turn_scale = config.turn_angular_scale
         self.cmd_vel_pub = rospy.Publisher('/cmd_move' , g_msgs.Twist , queue_size=100)
 
-	#发送急停速度，机器人停止
+    #发送急停速度，机器人停止
     def brake(self):
         self.cmd_vel_pub.publish(g_msgs.Twist())
 
     def start_turn(self , goal_angular = 0.0):
         rospy.loginfo('[robot_move_pkg]->move_an_angular will turn %s'%goal_angular)
-        rospy.on_shutdown(self.brake) #callback function
-        current_angular = start_angular = self.robot_state.get_robot_current_yaw()
-		#系统停止时，机器人急停
-        rospy.on_shutdown(self.brake)
-        current_angular = start_angular = self.robot_state.get_robot_current_yaw()
-        #获取当前机器人的角度
+        rospy.on_shutdown(self.brake) #系统停止时，机器人急停
+        current_angular = start_angular = self.robot_state.get_robot_current_w()#获取当前机器人的角度
         is_arrive_goal = False
         r = rospy.Rate(100)
         delta_angular = current_angular - start_angular
-
-        delta_upper_limit = abs(goal_angular) + self.stop_tolerance
-        delta_lower_limit = abs(goal_angular) - self.stop_tolerance
-
+        delta_upper_limit = abs(goal_angular) + self.stop_tolerance #误差上限
+        delta_lower_limit = abs(goal_angular) - self.stop_tolerance #误差下限
         move_velocity = g_msgs.Twist()
         while not rospy.is_shutdown() and not is_arrive_goal:
-            if abs(delta_angular)<=delta_upper_limit and abs(delta_angular) >= delta_lower_limit:
-		#误差上限
-		delta_upper_limit = abs(goal_angular) + self.stop_tolerance
-        #误差下限
-        delta_lower_limit = abs(goal_angular) - self.stop_tolerance
-
-        move_velocity = g_msgs.Twist()
-        while not rospy.is_shutdown() and not is_arrive_goal:
-        	#没有到达目标
-            if abs(delta_angular)<=delta_upper_limit and abs(delta_angular) >= delta_lower_limit:
+            if abs(delta_angular)<=delta_upper_limit and abs(delta_angular) >= delta_lower_limit: #到达目标
                 self.brake()
                 is_arrive_goal = True
                 break
-
+            current_angular = self.robot_state.get_robot_current_w()
             if goal_angular > 0:
                 move_velocity.angular.z = self.speed
             else:
                 move_velocity.angular.z = -self.speed
-            self.cmd_vel_pub.publish(move_velocity)
-            delta_angular = self.robot_state.get_robot_current_yaw() - start_angular
+            delta_angular += abs(abs(current_angular) - abs(start_angular) )
+            start_angular = current_angular
+            self.cmd_vel_pub.publish(move_velocity) #发送速度，使机器人旋转
+            print delta_angular
             r.sleep()
+        self.brake()
+
 
     def turn(self , angular = 0.0):
-	    #正规化
-        self.start_turn(self.normalize_angle(angular))
+        self.start_turn(self.normalize_angle(angular))#正规化
 
-	#将目标角度规范化，取最近的方向进行移动
+    #将目标角度规范化，取最近的方向进行移动
 	#如：发送目标值200
 	#此时可正转200,亦可逆转160
 	#此时逆转160度
@@ -102,6 +89,6 @@ class turn_an_angular(object):
 if __name__ == '__main__':
     rospy.init_node('turn_angular')
     a = turn_an_angular()
-    a.turn(math.radians(-30.0))
+    a.turn(math.radians(float(sys.argv[1])))
 
 sys.path.remove(config.robot_state_pkg_path)
