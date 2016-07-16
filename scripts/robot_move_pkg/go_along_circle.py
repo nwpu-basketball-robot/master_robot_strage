@@ -26,10 +26,10 @@ class go_along_circle(object):
         # 设置sleep 频率， 这将影响圆弧的近似程度
         self.rate = 100.0
         self.R = rospy.Rate(int(self.rate))
-        self.MODE = { 1:( 1, 1),
-                      2:(-1,-1),
-                      3:( 1,-1),
-                      4:(-1, 1)}
+        self.MODE = { 1:(-1, 1),
+                      2:( 1,-1),
+                      3:( 1, 1),
+                      4:(-1,-1)}
     def brake(self): # 停止回调函数
         rospy.loginfo('the robot is stopping')
         self.move_cmd_pub.publish(g_msgs.Twist())
@@ -71,5 +71,5 @@ class go_along_circle(object):
 if __name__ == '__main__':
     rospy.init_node('ffffffffffffffff')
     test = go_along_circle()
-    test.go(1.5,pi/2.0,1)
+    test.go(0.5,pi/2.0,4)
 sys.path.remove(config.robot_state_pkg_path)

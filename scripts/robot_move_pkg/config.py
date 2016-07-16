@@ -14,7 +14,7 @@ linear_move_speed = 0.3
 #设置靠近球时的速度
 low_linear_speed = 0.1
 #设置误差值
-linear_move_stop_tolerance = 0.01
+linear_move_stop_tolerance = 0.02
 #设置转弯的速度
 turn_angular_speed = 0.2
 #速度比例值  最终速度=turn_angular_speed * turn_angular_scale
