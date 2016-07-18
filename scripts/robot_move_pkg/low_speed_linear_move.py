@@ -14,13 +14,13 @@ import robot_state_pkg.get_robot_position as robot_state#注意修改路径
 import turn_an_angular
 class low_speed_linear_move(object):
     def __init__(self):
-        rospy.loginfo('[robot_move_pkg]->linear_move is initial')
+        rospy.loginfo('[robot_move_pkg]->low_speed_linear_move is initial')
         #通过这个模块获取机器人当前姿态
         self.robot_state = robot_state.robot_position_state()
         self.cmd_move_pub = rospy.Publisher('/cmd_move', g_msgs.Twist, queue_size = 100)
         self.rate = rospy.Rate(100)
         #设置机器人移动阈值
-        self.stop_tolerance = config.linear_move_stop_tolerance
+        self.stop_tolerance = config.low_speed_move_stop_tolerance
         #通过这个模块修正最终姿态角
         self.accurate_turn_an_angular = turn_an_angular.turn_an_angular()
         self.x_speed = 0.0
@@ -57,9 +57,6 @@ class low_speed_linear_move(object):
         #如果目标距离不为零，则根据目标角度与直线移动的时间计算大概的角速度
         if goal_distance != 0:
             self.w_speed = yaw / goal_distance * move_speed_value
-        else:
-        #反之则直接利用turn_angular模块移动，这个速度的设置无效果
-            self.w_speed = math.copysign(config.turn_angular_speed, yaw)
         move_velocity.angular.z = self.w_speed
         #获取启动前的x，y，yaw
         start_x, start_y, start_yaw = self.robot_state.get_robot_current_x_y_w()
@@ -101,7 +98,7 @@ class low_speed_linear_move(object):
 
     def move_to(self, x = 0.0, y = 0.0, yaw = 0.0):
     #提供给外部的接口
-        rospy.loginfo('[robot_move_pkg]->linear_move will move to x_distance = %s'
+        rospy.loginfo('[robot_move_pkg]->low_speed_linear_move will move to x_distance = %s'
                       'y_distance = %s, angular = %s'%(x,y,yaw))
         if x == 0.0 and y == 0:
             self.accurate_turn_an_angular.turn(self.normalize_angle(yaw))
@@ -117,14 +114,14 @@ class low_speed_linear_move(object):
     #将目标角度转换成-2pi到2pi之间
         while angle > math.pi:
             angle -= 2.0 * math.pi
-        while angle < math.pi:
+        while angle <-math.pi:
             angle += 2.0 * math.pi
         print('current angular is %s'%angle)
         return  angle
 
 if __name__ == '__main__':
     rospy.init_node('linear_move')
-    move_cmd = linear_move()
+    move_cmd = low_speed_linear_move()
     move_cmd.move_to( x = 1,yaw = 1.57)
     move_cmd.move_to(x= -1, yaw= -1.57)
    

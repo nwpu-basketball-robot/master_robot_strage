@@ -49,7 +49,7 @@ class go_along_circle(object):
         start_yaw = self.get_position.get_robot_current_w()
         while not rospy.is_shutdown() and self.reach_goal != True:
             current_yaw = self.get_position.get_robot_current_w()
-            ang_has_moved = abs(abs(current_yaw) - abs(start_yaw))
+            ang_has_moved += abs(abs(current_yaw) - abs(start_yaw))
             start_yaw = current_yaw
             if abs(ang_has_moved - abs(angular)) <= self.stop_tolerance:
                 self.reach_goal = True
@@ -57,7 +57,7 @@ class go_along_circle(object):
             move_vel.linear.y = self.move_speed*symbol_y
             # 利用微分的原理, 可以发现 dw*dt = dt*atan2(dv*dt/2.0, radius)
             move_vel.angular.z = self.rate*atan2(self.move_speed/self.rate,radius)*symbol_w
-
+            print ang_has_moved
             self.move_cmd_pub.publish(move_vel)
             self.R.sleep()
         self.brake()
@@ -71,5 +71,5 @@ class go_along_circle(object):
 if __name__ == '__main__':
     rospy.init_node('ffffffffffffffff')
     test = go_along_circle()
-    test.go(0.5,pi/2.0,4)
+    test.go(0.5,pi/2.0,1)
 sys.path.remove(config.robot_state_pkg_path)

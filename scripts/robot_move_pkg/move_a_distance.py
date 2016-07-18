@@ -33,7 +33,7 @@ class move_a_distance(object):
     def __init__(self):
         rospy.loginfo('[robot_move_pkg]->move_a_distance is initial')
         self.robot_state = robot_state.robot_position_state()
-        self.stop_tolerance = config.linear_move_stop_tolerance
+        self.stop_tolerance = config.high_speed_stop_tolerance
         self.cmd_move_pub = rospy.Publisher('/cmd_move',g_msgs.Twist , queue_size=100)
         self.vel_sp = sp_func.growth_curve()
 

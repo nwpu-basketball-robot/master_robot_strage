@@ -12,20 +12,21 @@ class move_to_home(object):
         self.last_move_goal = config.last_distance
         self.angular_tolerance = config.back_home_angular_tolerance
         self.distance_tolerance = config.line_distance_tolerance
-        #需要与白线保持的距离
+        # 需要与白线保持的距离
         self.line_distance = config.line_distance
 
         self.x_speed = config.go_home_x_speed
         self.y_speed = config.go_home_y_speed * self.move_direction
         self.z_speed = config.go_home_w_speed
 
-        self.cmd_move_pub =rospy.Publisher("/cmd_move_robot",g_msg.Twist, queue_size= 100)
+        self.cmd_move_pub = rospy.Publisher("/cmd_move_robot", g_msg.Twist, queue_size= 100)
         self.vel = g_msg.Twist()
+
     def start_run(self, at_home_door, distance, angular):
         if at_home_door == True:
             self.brake()
-            self.robot_move.move_to(x = self.last_move_goal)
-            return  True
+            self.robot_move.move_to(x=self.last_move_goal)
+            return True
         if distance > (self.line_distance + self.distance_tolerance):
             self.vel.linear.x = self.x_speed
             self.vel.linear.y = math.copysign(self.y_speed, self.move_direction)
@@ -42,7 +43,6 @@ class move_to_home(object):
         else:
             self.vel.angular.z = self.z_speed
         self.cmd_move_pub.publish(self.vel)
-
 
         return False
 

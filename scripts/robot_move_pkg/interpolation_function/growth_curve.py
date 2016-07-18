@@ -20,7 +20,9 @@ class growth_curve(object):
         f2 = lambda x: f1(self.goal - x)
         if dis <= self.goal/2.0 :
             return f1(dis)
-        elif dis < self.goal:
-            return f2(dis)
         else:
-            return 0.0
+#        elif dis < self.goal:
+            return f2(dis)
+#        else:
+#            return 0.0
+

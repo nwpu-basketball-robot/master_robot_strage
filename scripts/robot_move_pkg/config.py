@@ -6,21 +6,25 @@
 robot_state_pkg_path = '/home/hyx/basketball_ws/src/basketball_strage/scripts/'	
 #import sys
 #robot_state_pkg_path = sys.path[0][0:sys.path[0].index('/robot')]
-# WARNING!!!!!!!!!!!!!!!! 发下去的速度不要超过 0.6左右
+# WARNING!!!!!!!!!!!!!!!! 发下去的速度不要超过 0.8右
 # WARNING!!!!!!!!!!!!!!!! 发下去的速度不要低于 0.036
 
 #设置直线速度
-linear_move_speed = 0.3
-#设置靠近球时的速度
+linear_move_speed = 0.64
+#设置靠近球时以及在机器人坐标下的速度
 low_linear_speed = 0.1
-#设置误差值
-linear_move_stop_tolerance = 0.02
+#设置插值直线移动阈值
+high_speed_stop_tolerance = 0.04
+# 设置低速以及在机器人坐标系下的移动阈值
+low_speed_move_stop_tolerance = 0.03
 #设置转弯的速度
-turn_angular_speed = 0.2
-#速度比例值  最终速度=turn_angular_speed * turn_angular_scale
-turn_angular_scale = 1.0
-#弧度值 代表停止的误差值
-turn_augular_stop_tolerance = 0.02
+high_turn_angular_speed = 0.3
+# 低速、在机器人坐标系下转动速度
+low_turn_angular_speed = 0.15
+#弧度值 代表高速停止的阈值
+high_turn_angular_stop_tolerance = 0.04
+#弧度值 低速、在机器人坐标系下转动阈值
+low_turn_angular_stop_tolerance = 0.05
 
 #    回家时的一些参数
 # 1:回家是向机器人的左边跑，
