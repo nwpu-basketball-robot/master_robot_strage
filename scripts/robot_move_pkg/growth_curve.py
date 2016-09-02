@@ -21,7 +21,7 @@ class growth_curve(object):
     def cal(self,dis):
         f1 = lambda x: self.gamma / (1.0 + self.start_beta*exp(-self.start_alpha * x))
         f2 = lambda x: self.gamma / (1.0 + self.end_beta*exp(-self.end_alpha *(self.goal -  x)))
-        if dis <= self.goal/2.5 :
+        if dis <= self.goal/2.0 :
             return f1(dis)
         else:
 #        elif dis < self.goal:

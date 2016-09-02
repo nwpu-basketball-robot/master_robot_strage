@@ -28,7 +28,7 @@ class low_speed_linear_move(object):
         self.w_speed = 0.0
         #设置移动过程中的速度
         self.speed = config.low_linear_speed
-        
+
     def brake(self):#停止时的回调函数
         rospy.loginfo('The robot is stopping...')
         move_velocity = g_msgs.Twist()
@@ -45,19 +45,20 @@ class low_speed_linear_move(object):
         #计算移动欧拉距离
         goal_distance = math.sqrt(math.pow(x, 2)+math.pow(y, 2))
         #如果x方向距离为零，则直接设置y方向速度
+        vx = 0.0
         if x == 0.0:
-            self.y_speed = config.linear_move_speed
+            vy = config.linear_move_speed
         else:
         #如果不为零则根据x、y移动距离将config中的速度分解
             direction_angle = math.atan2(y , x)
-            self.x_speed = abs(config.linear_move_speed * math.cos(direction_angle))
-            self.y_speed = abs(config.linear_move_speed * math.sin(direction_angle))
+            vx = abs(config.linear_move_speed * math.cos(direction_angle))
+            vy = abs(config.linear_move_speed * math.sin(direction_angle))
 
-        move_speed_value = config.linear_move_speed
+        move_speed_value = config.low_linear_speed
         #如果目标距离不为零，则根据目标角度与直线移动的时间计算大概的角速度
-        if goal_distance != 0:
-            self.w_speed = yaw / goal_distance * move_speed_value
-        move_velocity.angular.z = self.w_speed
+#        if goal_distance != 0:
+#            self.w_speed = yaw / goal_distance * move_speed_value
+#        move_velocity.angular.z = self.w_speed
         #获取启动前的x，y，yaw
         start_x, start_y, start_yaw = self.robot_state.get_robot_current_x_y_w()
         is_arrive_goal = False
@@ -73,6 +74,8 @@ class low_speed_linear_move(object):
                 distance_to_arrive_goal = distance_has_moved - goal_distance
                 distance_to_arrive_goal_x = abs(x) - distance_has_moved_x
                 distance_to_arrive_goal_y = abs(y) - distance_has_moved_y
+                #计算速度
+                self.x_speed, self.y_speed = self.cal_speed(distance_has_moved, goal_distance, vx, vy)
                 if abs(distance_to_arrive_goal) <= self.stop_tolerance:
                     self.is_arrive_goal = True
                     break
@@ -92,9 +95,9 @@ class low_speed_linear_move(object):
 
             self.rate.sleep()
         self.brake()
-        current_yaw = self.robot_state.get_robot_current_yaw()
+#        current_yaw = self.robot_state.get_robot_current_yaw()
         #修正角度转动偏差，同时如果x，y均为零时转动角度
-        self.accurate_turn_an_angular.turn(yaw - current_yaw + start_yaw)
+#        self.accurate_turn_an_angular.turn(yaw - current_yaw + start_yaw)
 
     def move_to(self, x = 0.0, y = 0.0, yaw = 0.0):
     #提供给外部的接口
@@ -108,8 +111,8 @@ class low_speed_linear_move(object):
     #提供给外部改变直线移动速度的接口
     #def set_linear_speed(self,speed = 0):
     #    self.speed = speed;
-		
-	
+
+
     def normalize_angle(self, angle):
     #将目标角度转换成-2pi到2pi之间
         while angle > math.pi:
@@ -118,11 +121,27 @@ class low_speed_linear_move(object):
             angle += 2.0 * math.pi
         print('current angular is %s'%angle)
         return  angle
+    def cal_speed(self, dis, goal, vx=0.0, vy=0.0):
+        shit_begin = 0.12
+        shit_end = 0.2
+        s = math.sqrt(vx*vx+vy*vy)
+        dx = 0.03*vx/s
+        dy = 0.03*vy/s
+        if dis < shit_begin*goal:
+            k = dis/(shit_begin*goal)
+            return (k*vx+dx,k*vy+dy)
+        elif dis <(1-shit_end)*goal:
+            return (vx+dx, vy+dy)
+        else:
+            k = (goal - dis)/(shit_end*goal)
+            return (k*vx+dx, k*vy+dy)
+
 
 if __name__ == '__main__':
     rospy.init_node('linear_move')
     move_cmd = low_speed_linear_move()
-    move_cmd.move_to( x = 1,yaw = 1.57)
-    move_cmd.move_to(x= -1, yaw= -1.57)
-   
+    move_cmd.move_to( x = 0, y=1)
+    rospy.sleep(1.5)
+    move_cmd.move_to(x= 0,y=-1)
+
 sys.path.remove(config.robot_state_pkg_path)

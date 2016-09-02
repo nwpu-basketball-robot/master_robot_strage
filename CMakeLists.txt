@@ -3,18 +3,18 @@ project(basketball_strage)
 
 find_package(catkin REQUIRED COMPONENTS
   basketball_msgs
-#  ros_smach
+  #  ros_smach
   smach_ros
   roscpp
   rospy
 )
 
-catkin_package(
+#catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES basketball_strage
-#  CATKIN_DEPENDS basketball_msgs ros_smach roscpp rospy
+#  CATKIN_DEPENDS basketball_msgs ros_smach roscpp rospy std_msgs
 #  DEPENDS system_lib
-)
+#)
 
 
 
@@ -24,5 +24,4 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
-
 

@@ -7,6 +7,21 @@
 
 <p>------------------------------------------------开发区--------------------------------------------------</p>
 
+<p><font size="5px">robot_shovel_srv</font></p>
+<p>
+	<ul>
+		<li>control_srv.py......................铲子服务的接口</li>
+	</ul>
+</p>
+<p><font size="5px">robot_find_pkg</font></p>
+<p>
+	<ul>
+        <li>findball.py.........................检测篮球的接口</li>
+        <li>find_cylinder_state.py..............检测定位柱的接口</li>
+		<li>find_line.py........................检测边线的接口</li>
+		<li>find_volleyball.py..................检测排球的接口</li>
+	</ul>
+</p>
 <p><font size="5px">robot_move_pkg</font></p>
 <p>
     <ul>
@@ -33,17 +48,11 @@
         <li>get_robot_position.py..............获得机器人当前位置信息</li>
     </ul>
 </p>
-<p><font size="5px">ball_state_pkg</font></p>
+<p><font size="5px">robot_state_class</font></p>
 <p>
-    <ul>
-        <li>find_oneball_state.py..............获得一个球当前位置信息</li>
-        <li>find_twoball_state.py..............获得两个球当前位置以及色彩信息</li>
-    </ul>
-</p>
-<p><font size="5px">cylinder_state_pkg</font></p>
-<p>
-    <ul>
-        <li>find_cylinder_state.py..............获得定位柱的位置信息</li>
+	<ul>
+        <li>first_project_state.py.............传球项目所需要的状态类</li>
+        <li>second_project_state.py............投篮项目所需要的状态类）
     </ul>
 </p>
 <p>strage_test.py...............一个状态机测试程序</p>
@@ -81,7 +90,7 @@
 		<li>low_speed_linear_move:</li>
 		<p>&nbsp;&nbsp;&nbsp;基本无误</p>
 		<li>move_in_robot:</li>
-		<p>&nbsp;&nbsp;&nbsp;尚未进行大量测试</p>
+		<p>&nbsp;&nbsp;&nbsp;基本无误/p>
 		<li>move_to_home:</li>
 		<p>&nbsp;&nbsp;&nbsp;尚未测试</p>
 		<li>go_along_circle:</li>

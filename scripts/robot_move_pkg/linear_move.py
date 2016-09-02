@@ -35,7 +35,7 @@ class linear_move(object):
         #进行线速度插值
         self.linear_sp = spline_func.growth_curve()
 
-        
+
     def brake(self):#停止时的回调函数
         rospy.loginfo('The robot is stopping...')
         move_velocity = g_msgs.Twist()
@@ -99,12 +99,24 @@ class linear_move(object):
 #        self.accurate_turn_an_angular.turn(self.normalize_angle(yaw - current_yaw + start_yaw))
 
     def move_to(self, x= 0.0, y= 0.0, yaw= 0.0):
-    # 提供给外部的接口
+     #'''提供给外部的接口,移动某一距离、角度'''
         rospy.loginfo('[robot_move_pkg]->linear_move will move to x_distance = %s y_distance = %s, angular = %s'%(x,y,yaw))
         if x == 0.0 and y == 0:
             self.accurate_turn_an_angular.turn(self.normalize_angle(yaw))
         else:
             self.start_run(x, y, yaw)
+            
+    def move_to_pose(self, x = 0.0, y = 0.0, yaw = 0.0):
+        '''提供给外部的接口，移动到某一姿态'''
+        rospy.loginfo('[robot_move_pkg]->linear_move will move to x_distance = %s y_distance = %s, angular = %s'%(x,y,yaw))
+        if x == 0.0 and y == 0:
+            self.accurate_turn_an_angular.turn(self.cal_now_pose_to_pose(yaw))
+        else:
+            self.start_run(x, y,self.cal_now_pose_to_pose(yaw))
+
+    def cal_now_pose_to_pose(self,goal_pose_yaw):
+        current_yaw = self.robot_state.get_robot_current_w()
+        return self.normalize_angle(current_yaw - goal_pose_yaw)
 
     def normalize_angle(self, angle):
     # 将目标角度转换成-pi到pi之间
@@ -118,8 +130,7 @@ class linear_move(object):
 if __name__ == '__main__'   :
     rospy.init_node('linear_move')
     move_cmd = linear_move()
-    move_cmd.move_to( x =-7.5 ,y =0.0,yaw = 0.0)
-#    rospy.sleep(1.0)
-#    move_cmd.move_to(x = 1, yaw= 1.57)
+    print self.cal_now_pose_to_pose(1.57)
+#move_cmd.move_to( x = 3.6 ,y =2.4,yaw =  3.14  )
 
 sys.path.remove(config.robot_state_pkg_path)

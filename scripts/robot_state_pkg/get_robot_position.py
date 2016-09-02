@@ -85,6 +85,8 @@ class robot_position_state(object):
 if __name__ == '__main__':
     rospy.init_node('test')
     a = robot_position_state()
-    s = a.get_robot_current_x()
-    print s
-    a.get_robot_current_x()
+    s = a.get_robot_current_w()
+    while True :
+         s = a.get_robot_current_w()
+	 print s
+    

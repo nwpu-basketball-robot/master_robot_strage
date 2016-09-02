@@ -104,6 +104,32 @@ class linear_move(object):
         self.brake()
         # 修正角度转动偏差，同时如果x，y均为零时转动角度
 
+    def turn_to(self,goal_angular):
+        rospy.on_shutdown(self.brake) #系统停止时，机器人急停
+        current_angular = start_angular = self.robot_state.get_robot_current_w()#获取当前机器人的角度
+        is_arrive_goal = False
+        r = rospy.Rate(100)
+        delta_angular = current_angular - start_angular
+        delta_upper_limit = abs(goal_angular) + 0.02 #误差上限
+        delta_lower_limit = abs(goal_angular) - 0.02 #误差下限
+        move_velocity = g_msgs.Twist()
+        while not rospy.is_shutdown() and not is_arrive_goal:
+            if abs(delta_angular)<=delta_upper_limit and abs(delta_angular) >= delta_lower_limit: #到达目标
+                self.brake()
+                is_arrive_goal = True
+                break
+            current_angular = self.robot_state.get_robot_current_w()
+            if goal_angular > 0:
+                move_velocity.angular.z = 0.1
+            else:
+                move_velocity.angular.z = -0.1
+            delta_angular += abs(abs(current_angular) - abs(start_angular) )
+            start_angular = current_angular
+            self.cmd_move_pub.publish(move_velocity) #发送速度，使机器人旋转
+            r.sleep()
+        self.brake()
+
+
     def move_to(self, x = 0.0, y = 0.0, yaw = 0.0):
         ''' 提供给外部的接口 '''
         rospy.on_shutdown(self.brake) #系统停止时，机器人急停
@@ -127,7 +153,7 @@ class linear_move(object):
 if __name__ == '__main__':
     rospy.init_node('linear_move')
     move_cmd = linear_move()
-    move_cmd.move_to(x= 0.5,y =-0.5 , yaw = 0.)
+    move_cmd.move_to(x= 0.95,y =1.05 , yaw = 0.)
 #    move_cmd.move_to(x= -1, yaw= -1.57)
    
 sys.path.remove(config.robot_state_pkg_path)
