@@ -7,6 +7,8 @@
 
 # 2016-7-18
 # 将直线移动速度和角速度进行了关联
+# 2016-9-4
+# 单方向距离判断取代欧拉距离;单一方向下移动进行另一方向修正
 import rospy
 import geometry_msgs.msg as g_msgs
 import  math
@@ -34,8 +36,7 @@ class linear_move(object):
         self.w_speed = config.high_turn_angular_speed
         #进行线速度插值
         self.linear_sp = spline_func.growth_curve()
-
-
+        self.amend_speed = 0.12
     def brake(self):#停止时的回调函数
         rospy.loginfo('The robot is stopping...')
         move_velocity = g_msgs.Twist()
@@ -54,58 +55,100 @@ class linear_move(object):
         # 算出方向角,便于接下来的分解
         direction_angle = math.atan2(y , x)
         # 获取启动前的x，y，yaw
-        start_x, start_y, start_yaw = self.robot_state.get_robot_current_x_y_w()
+        start_x, start_y, start_w = self.robot_state.get_robot_current_x_y_w()
         # 设置目标插值距离，确定最终插值曲线
         self.linear_sp.set_goal_distance(abs(goal_distance))
-        self.is_arrive_goal = False
         angular_has_moved = 0.0
+        x_arrive_goal = False
+        y_arrive_goal = False
         # 构建goal_angular 和 goal_distance 的函数关系后等式两边对dt取微分可得
         # w = df(goal_distance)/dgoal_distance * v
         # 因为我们简单的将goal_angular 和 goal_distance 构建为线性关系,所以最终角速度和线速度的关系为
         # w = goal_angular/goal_distance * v
         # 在这里,因为线速度不是完美连续的,所以为了让角度移动和直线移动尽量保持同步,所以加上了一个系数0.02
         # 0.02只是目前的一个补偿系数,可以进行大量的调试来精准的确定
-        cov_func =lambda x: x*abs(yaw)/ goal_distance +0.02
+        cov_func =lambda x: x*abs(yaw)/ goal_distance
         while not rospy.is_shutdown() and goal_distance != 0:
-            if self.is_arrive_goal == False:
-                current_x , current_y, current_yaw = self.robot_state.get_robot_current_x_y_w()
-                distance_has_moved = math.sqrt( math.pow(current_x - start_x, 2)+
-                                                math.pow(current_y - start_y, 2))
-                # 此速度是插值算出的线速度
-                linear_speed = self.linear_sp.cal(distance_has_moved)
-                #  算出走了多少弧度
-                angular_has_moved += abs(abs(current_yaw) - abs(start_yaw))
-                start_yaw  = current_yaw
-                # 角度在阈值之外就计算角速度,反之赋零
-                if yaw != 0.0 and abs(angular_has_moved - abs(yaw)) > self.angular_tolerance:
-                    move_velocity.angular.z = math.copysign(cov_func(linear_speed), yaw)
-                else:
-                    move_velocity.angular.z = 0.0
-                # 将插值算出来的速度进行分解
-                self.x_speed = linear_speed * math.cos(direction_angle)
-                self.y_speed = linear_speed * math.sin(direction_angle)
-                # 这个直线移动距离是为了与接下来的阈值比较
-                distance_to_arrive_goal = distance_has_moved - goal_distance
-                move_velocity.linear.x = math.copysign(self.x_speed, x)
-                move_velocity.linear.y = math.copysign(self.y_speed, y)
-                if abs(distance_to_arrive_goal) <= self.stop_tolerance:
-                    self.is_arrive_goal = True
+            current_x, current_y, current_w = self.robot_state.get_robot_current_x_y_w()
+            #x 方向已经移动的距离
+            x_has_moved = current_x - start_x
+            #有方向已经移动的距离
+            y_has_moved = current_y - start_y
+            dis_has_moved = math.sqrt(x_has_moved**2 + y_has_moved**2)
+            angular_has_moved += abs(abs(current_w) - abs(start_w))
+            start_yaw = current_w
+            #如果只走x
+            if y == 0:
+                if abs(abs(x_has_moved) - abs(goal_distance)) < self.stop_tolerance:
                     break
+                #x方向速度赋值
+                self.x_speed = math.copysign(self.linear_sp.cal(abs(x_has_moved)),x)
+                # 角度在阈值之外就计算角速度,反之赋零
+                if yaw != 0.0 and abs(angular_has_moved - abs(yaw)) < self.angular_tolerance:
+                    self.w_speed=0.0
+                else:
+                    self.w_speed = math.copysign(cov_func(self.x_speed), yaw)
+                #如果y方向位移超出阈值，则加上修正速度修正，反之为零
+                if abs(y_has_moved) < self.stop_tolerance:
+                    self.y_speed = 0.0
+                else:
+                    self.y_speed = math.copysign(self.amend_speed,-1*y_has_moved)
+            #只走y方向
+            elif x == 0:
+                if abs(abs(y_has_moved) - goal_distance) < self.stop_tolerance:
+                    break
+                self.y_speed = math.copysign(self.linear_sp.cal(abs(y_has_moved)),y)
+                # 角度在阈值之外就计算角速度,反之赋零
+                if yaw != 0.0 and abs(angular_has_moved - abs(yaw)) < self.angular_tolerance:
+                    self.w_speed = 0.0
+                else:
+                    self.w_speed = math.copysign(cov_func(self.y_speed), yaw)
+                #如果x方向超出阈值，则加上修正速度修正，反之赋零
+                if abs(x_has_moved) < self.stop_tolerance:
+                    self.x_speed = 0.0
+                else:
+                    self.x_speed = math.copysign(self.amend_speed,-1*x_has_moved)
+            else :
+                if x_arrive_goal == True and y_arrive_goal == True:
+                    break
+                else:
+                    linear_speed = self.linear_sp.cal(dis_has_moved)
+                    # 角度在阈值之外就计算角速度,反之赋零
+                    if yaw != 0.0 and abs(angular_has_moved - abs(yaw)) < self.angular_tolerance:
+                        self.w_speed = 0.0
+                    else:
+                        #9-4现在里程还算是比较准，所以进行停止判断时不参考欧拉距离，对单一方向进行判断
+                        self.w_speed = math.copysign(cov_func(linear_speed), yaw)
+                        #判断x方向是否到目标距离
+                        if abs(abs(x_has_moved) - abs(x)) < self.stop_tolerance:
+                            x_arrive_goal = True
+                            self.x_speed = 0.0
+                        else:
+                            self.x_speed = math.copysign(linear_speed*math.cos(direction_angle), x)
+                        #判断y方向是否到目标距离
+                        if abs(abs(y_has_moved) - abs(y)) < self.stop_tolerance:
+                            y_arrive_goal = True
+                            self.y_speed = 0.0
+                        else:
+                            self.y_speed = math.copysign(linear_speed*math.sin(direction_angle), y)
+
+            move_velocity.linear.x = self.x_speed
+            move_velocity.linear.y = self.y_speed
+            move_velocity.angular.z = self.w_speed
             self.cmd_move_pub.publish(move_velocity)
             self.rate.sleep()
+
         self.brake()
-        print angular_has_moved
 #        修正角度转动偏差，同时如果x，y均为零时转动角度
 #        self.accurate_turn_an_angular.turn(self.normalize_angle(yaw - current_yaw + start_yaw))
 
     def move_to(self, x= 0.0, y= 0.0, yaw= 0.0):
-     #'''提供给外部的接口,移动某一距离、角度'''
-        rospy.loginfo('[robot_move_pkg]->linear_move will move to x_distance = %s y_distance = %s, angular = %s'%(x,y,yaw))
+#        rospy.loginfo('[robot_move_pkg]->linear_move will move to x_distance = %s y_distance = %s, angular = %s' % (x,y,yaw))
         if x == 0.0 and y == 0:
             self.accurate_turn_an_angular.turn(self.normalize_angle(yaw))
         else:
             self.start_run(x, y, yaw)
-            
+
     def move_to_pose(self, x = 0.0, y = 0.0, yaw = 0.0):
         '''提供给外部的接口，移动到某一姿态'''
         rospy.loginfo('[robot_move_pkg]->linear_move will move to x_distance = %s y_distance = %s, angular = %s'%(x,y,yaw))
@@ -130,7 +173,8 @@ class linear_move(object):
 if __name__ == '__main__'   :
     rospy.init_node('linear_move')
     move_cmd = linear_move()
-    print self.cal_now_pose_to_pose(1.57)
-#move_cmd.move_to( x = 3.6 ,y =2.4,yaw =  3.14  )
+    print move_cmd.cal_now_pose_to_pose(1.57)
+    move_cmd.move_to( x = 6.0 ,y =0.0,yaw = math.pi/2.0)
+#   move_cmd.move_to( x = 2.6 )
 
 sys.path.remove(config.robot_state_pkg_path)
