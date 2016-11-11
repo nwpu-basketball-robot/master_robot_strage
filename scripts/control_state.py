@@ -40,5 +40,4 @@ class main(object):
 
 
 if __name__ == '__main__':
-    print "dsadasd"
     main().main_run()

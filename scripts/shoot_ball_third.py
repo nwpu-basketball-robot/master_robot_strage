@@ -109,19 +109,19 @@ def shoot_third():
                                transitions={'successed':'FindBall2',
                                             'failed':'failed'})
 
-            smach.StateMachine.add("FindBall2", Find_Ball(),
-                               transitions={"successed": "MOVE_ADJUST2",
+            smach.StateMachine.add("FindBall2", Search_Ball(),
+                               transitions={"successed": "MOVE_POINT2",
                                             "failed": "failed"},
                                remapping={'ball_x': 'ball_location_x',
                                           'ball_y': 'ball_location_y',
                                           'ball_theta': 'ball_theta'})
-            #
-            # smach.StateMachine.add('MOVE_POINT2',Move_Point(),
-            #                            transitions={'successed': 'MOVE_ADJUST2',
-            #                                         'failed': 'failed'},
-            #                            remapping={'ball_x': 'ball_location_x',
-            #                                       'ball_y': 'ball_location_y',
-            #                                       'ball_theta': 'ball_theta'})
+
+            smach.StateMachine.add('MOVE_POINT2',Move_Point_ST(),
+                                       transitions={'successed': 'MOVE_ADJUST2',
+                                                    'failed': 'failed'},
+                                       remapping={'ball_x': 'ball_location_x',
+                                                  'ball_y': 'ball_location_y',
+                                                  'ball_theta': 'ball_theta'})
 
             smach.StateMachine.add("MOVE_ADJUST2",Move_Adjust(),
                                transitions={"successed":"SHOVEL2",
@@ -148,8 +148,13 @@ def shoot_third():
                                                   'column_theta': 'column_theta'})
 
             smach.StateMachine.add('SHOOT2',Shoot(),
-                               transitions={'successed':'successed',
+                               transitions={'successed':'RETURN',
                                             'failed':'failed'})
+
+            smach.StateMachine.add("RETURN",Return(),
+                                   transitions={'successed':'successed',
+                                            'failed':'failed'})
+
 
 
         smach.Concurrence.add('RUN',sm_top)

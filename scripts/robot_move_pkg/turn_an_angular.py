@@ -108,6 +108,7 @@ class turn_an_angular(object):
 if __name__ == '__main__':
     rospy.init_node('turn_angular')
     a = turn_an_angular()
-    a.turn(math.radians(float(sys.argv[1])))
+    a.turn_to(-(1.0/4.0) * math.pi)
+    # a.turn(math.radians(float(sys.argv[1])))
 
 sys.path.remove(config.robot_state_pkg_path)

@@ -7,10 +7,6 @@
 # 将直线移动速度和角速度进行了关联
 # 2016-9-4
 # 单方向距离判断取代欧拉距离;单一方向下移动进行另一方向修正
-# 2016-10-22
-# 加入了轨迹简单修正，保持 now_y/now_x = goal_y/goal_x
-#10-24
-# 把不必要的输出语句注释掉了
 import rospy
 import geometry_msgs.msg as g_msgs
 import  math
@@ -38,10 +34,10 @@ class linear_move(object):
         self.w_speed = config.high_turn_angular_speed
         #进行线速度插值
         self.linear_sp = spline_func.growth_curve()
-        self.amend_speed = 0.18
+        self.amend_speed = 0.12
 
     def brake(self):#停止时的回调函数
-        #rospy.loginfo('The robot is stopping...')
+        rospy.loginfo('The robot is stopping...')
         move_velocity = g_msgs.Twist()
         move_velocity.linear.x = 0
         move_velocity.linear.y = 0
@@ -55,7 +51,7 @@ class linear_move(object):
         # 计算目标移动欧拉距离
         goal_distance = math.sqrt(math.pow(x, 2)+math.pow(y, 2))
         # 算出方向角,便于接下来的分解
-        direction_angle = math.atan2(abs(y) , abs(x))
+        direction_angle = math.atan2(y , x)
         # 获取启动前的x，y，yaw
         start_x, start_y, start_w = self.robot_state.get_robot_current_x_y_w()
         # 设置目标插值距离，确定最终插值曲线
@@ -124,40 +120,21 @@ class linear_move(object):
                     break
                 else:
                     linear_speed = self.linear_sp.cal(dis_has_moved)
-                    current_direction_angle = math.atan2(abs(y_has_moved), abs(x_has_moved))
                     # 角度在阈值之外就计算角速度,反之赋零
                     if yaw != 0.0 and abs(angular_has_moved - abs(yaw)) < self.angular_tolerance:
                         self.w_speed = 0.0
                     else:
                         self.w_speed = math.copysign(cov_func(linear_speed), yaw)
                     #9-4现在里程还算是比较准，所以进行停止判断时不参考欧拉距离，对单一方向进行判断
-
-                    #10.7发现多次以来总会有一些特殊目标距离会使机器人x,y某一方向提前到达目标距离
-                    #也就是说机器人最后会以一个小速度移动一段距离
-                    #算出当前x,y方向角与目标方向角之间的差值
-                    #
-                    shit = direction_angle - current_direction_angle
-                    if abs(shit) < 0.05:
-                        # Y 方向跑的慢
-                        if shit > 0:
-                            x_amend_speed = 0.0
-                            y_amend_speed = self.amend_speed
-                        # X 方向跑的慢
-                        else:
-                            x_amend_speed = self.amend_speed
-                            y_amend_speed = 0.0
-                    else:
-                        x_amend_speed = 0.0
-                        y_amend_speed = 0.0
                     #判断x方向是否到目标距离
                     if abs(abs(x_has_moved) - abs(x)) <= self.stop_tolerance:
                         x_arrive_goal = True
                         self.x_speed = 0.0
-                        #print "x is end"
+                        #x=0.0
                         #is_in_y = True
                         #self.linear_sp.set_goal_distance(y)
                     else:
-                        self.x_speed = math.copysign((linear_speed + x_amend_speed)*math.cos(direction_angle), x)
+                        self.x_speed = math.copysign((linear_speed)*math.cos(direction_angle), x)
                     #判断y方向是否到目标距离
                     if abs(abs(y_has_moved) - abs(y)) <= self.stop_tolerance:
                         y_arrive_goal = True
@@ -166,9 +143,7 @@ class linear_move(object):
                         #is_in_x = True
                         #self.linear_sp.set_goal_distance(x)
                     else:
-                        self.y_speed = math.copysign((linear_speed + y_amend_speed)*math.sin(direction_angle), y)
-
-
+                        self.y_speed = math.copysign((linear_speed)*math.sin(direction_angle), y)
             #将计算好的速度赋值并发下去
             move_velocity.linear.x = self.x_speed
             move_velocity.linear.y = self.y_speed
@@ -186,7 +161,7 @@ class linear_move(object):
 
     def move_to_pose(self, x = 0.0, y = 0.0, yaw = 0.0):
         '''提供给外部的接口，移动到某一姿态'''
-        #rospy.loginfo('[robot_move_pkg]->linear_move will move to x_distance = %s y_distance = %s, angular = %s'%(x,y,yaw))
+        rospy.loginfo('[robot_move_pkg]->linear_move will move to x_distance = %s y_distance = %s, angular = %s'%(x,y,yaw))
         if x == 0.0 and y == 0:
             self.accurate_turn_an_angular.turn(self.cal_now_pose_to_pose(yaw))
         else:
@@ -202,13 +177,14 @@ class linear_move(object):
             angle -= 2.0 * math.pi
         while angle < -math.pi:
             angle += 2.0 * math.pi
-        #print('current angular is %s'%angle)
+        print('current angular is %s'%angle)
         return  angle
 
 if __name__ == '__main__'   :
     rospy.init_node('linear_move')
     move_cmd = linear_move()
-    move_cmd.move_to( x = 9.6 ,y=-1.2 ,yaw =-math.pi/4.0)
+   # move_cmd.move_to( x = 5.4 ,y=-9.6 ,yaw =-math.pi/4.0)
+    move_cmd.move_to(9.6,-1.2,math.pi/4.0)
 #   move_cmd.move_to( x = 2.6 )
 
 sys.path.remove(config.robot_state_pkg_path)

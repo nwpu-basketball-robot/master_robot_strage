@@ -151,7 +151,10 @@ def shoot_second():
                                                   'column_theta': 'column_theta'})
 
             smach.StateMachine.add('SHOOT2',Shoot(),
-                               transitions={'successed':'successed',
+                               transitions={'successed':'RETURN',
+                                            'failed':'failed'})
+            smach.StateMachine.add("RETURN",Return(),
+                                   transitions={'successed':'successed',
                                             'failed':'failed'})
 
         smach.Concurrence.add('RUN',sm_top)

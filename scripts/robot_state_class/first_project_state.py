@@ -34,9 +34,10 @@ class Return(smach.State):
             self.service_preempt()
             return 'failed'
         (current_x,current_y) = self.cmd_position.get_robot_current_x_y()
-        self.cmd_move.move_to(x = 2.5-current_x,y = -2-current_y)
+        self.cmd_move.move_to(x = 2-current_x,y = -1.5-current_y)
         # self.cmd_move.move_to(y =  -current_y)
         self.cmd_turn.turn_to(math.pi)
+        rospy.sleep(0.5)
         self.cmd_return.go_close_line()
         # self.cmd_move.move_to(x = -2.6)
 
@@ -57,7 +58,8 @@ class Shoot_Adjust(smach.State):
             self.service_preempt()
             return 'failed'
         (current_x,current_y) = self.cmd_position.get_robot_current_x_y()
-        self.move_cmd.move_to(x = 6.3 - current_x,y = -0.65 - current_y)
+        self.move_cmd.move_to(x = 6.3 - current_x,y = -0.55 - current_y)
+        (current_x,current_y) = self.cmd_position.get_robot_current_x_y()
         angular = math.atan2((-6.7 - current_y),(8.5 - current_x))
         self.turn_cmd.turn_to(angular)
         return 'successed'
@@ -132,7 +134,7 @@ class Move_Point(smach.State):
             return 'failed'
         rospy.loginfo("x = %s"%ud.ball_x)
         rospy.loginfo("y = %s"%ud.ball_y)
-        self.move_cmd.move_to(y = ud.ball_y - 0.3)
+        self.move_cmd.move_to(y = ud.ball_y-0.3)
         self.move_cmd.move_to(x=ud.ball_x-1)
         return 'successed'
 
@@ -188,7 +190,7 @@ class Shovel_Control_Up(smach.State):
         if self.preempt_requested():
             self.service_preempt()
             return 'failed'
-        rospy.sleep(1)
+        rospy.sleep(1.5)
         self.cmd_shovel.control_shovel(control_type= 4)
         # rospy.sleep(0.5)
         return 'successed'
@@ -248,7 +250,7 @@ class Move_Point_To_Shoot(smach.State):
             self.service_preempt()
             return 'failed'
         # 根据实际情况修改
-        self.move_cmd.move_to(x = 6.3,y = -0.65)
+        self.move_cmd.move_to(x = 6.4,y = -0.75)
         (current_x,current_y) = self.cmd_position.get_robot_current_x_y()
         angular = math.atan2( -6.7 - current_y,8.5 - current_x) #需要修改
         self.turn_cmd.turn_to(angular)
@@ -292,7 +294,7 @@ class Move_To_Three_Point_Line(smach.State):
             self.service_preempt()
             return 'failed'
         self.move_cmd.move_to(x = 2.6)
-        self.move_cmd.move_to(y = -4.8,yaw = -math.pi/1.8)
+        self.move_cmd.move_to(y = -4.8,yaw = -math.pi/2)
         return 'successed'
 
 ############################################
@@ -314,7 +316,7 @@ class Move_To_Another_Ball(smach.State):
             self.service_preempt()
             return 'failed'
         (current_x,current_y) = self.cmd_position.get_robot_current_x_y()
-        self.move_cmd.move_to(x = 1.5 - current_x,y = -8.7 - current_y)
+        self.move_cmd.move_to(x = 1.9 - current_x,y = -9.2 - current_y)
         self.turn_cmd.turn_to(- math.pi /2.5)
         return 'successed'
 
@@ -333,9 +335,9 @@ class Shoot_Adjust_Third(smach.State):
             self.service_preempt()
             return 'failed'
         (current_x,current_y) = self.cmd_position.get_robot_current_x_y()
-        self.move_cmd.move_to(yaw = math.pi/3)
-        self.move_cmd.move_to(x = 3.25 - current_x,y = -4.7 - current_y)
-        angular = -math.atan2((-6.7 - current_y),(8 - current_x))
+        self.move_cmd.move_to(x = 3.25 - current_x,y = -4.7 - current_y,yaw= math.pi/3)
+        (current_x,current_y) = self.cmd_position.get_robot_current_x_y()
+        angular = math.atan2((-6.7 - current_y),(8 - current_x))
         self.turn_cmd.turn_to(angular)
         return 'successed'
 
@@ -359,8 +361,8 @@ class Move_To_Another_Ball_1(smach.State):
             return 'failed'
 
         (current_x,current_y) = self.cmd_position.get_robot_current_x_y()
-        self.move_cmd.move_to(x = 6.2-current_x,y = -0.6-current_y)
-        self.turn_cmd.turn_to(-math.pi/6)
+        self.move_cmd.move_to(x = 5.5-current_x,y = -0.6-current_y)
+        self.turn_cmd.turn_to(0)
         return 'successed'
 
 #在第一次移动检测后没有检测到球的情况下移动到另一个个点，再进行一次检测
@@ -397,7 +399,7 @@ class Shoot_Adjust_Second(smach.State):
         if self.preempt_requested():
             self.service_preempt()
             return 'failed'
-        self.cmd_move_robot.move_to(x = -0.5)
+        self.cmd_move_robot.move_to(x = -0.8)
         (current_x,current_y) = self.cmd_position.get_robot_current_x_y()
         angular = math.atan2((-6.7 - current_y),(8 - current_x))
         self.turn_cmd.turn_to(angular)

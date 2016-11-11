@@ -11,14 +11,15 @@ import rospy
 import roslib
 import sys
 sys.path.append('/home/mrxu/basketball/src/basketball_strage/scripts/')
-from volleyball_detect.srv import *
+# from volleyball_detect.srv import *
+from object_detect.srv import *
 import geometry_msgs.msg as g_msgs
 from robot_move_pkg import  go_along_circle
 from robot_state_pkg import get_robot_position
 
 class find_volleyball(object):
     def __init__(self):
-        self.find_ball_client = rospy.ServiceProxy('volleyball_data',CatchVolleyball)
+        self.find_ball_client = rospy.ServiceProxy('volleyball_data',volleyballdata)
         self.cmd_vel_pub = rospy.Publisher('cmd_move_robot' , g_msgs.Twist , queue_size=100)
         self.cmd_position = get_robot_position.robot_position_state()
         self.move_speed = 0.21
@@ -38,7 +39,7 @@ class find_volleyball(object):
         self.find_ball_client.wait_for_service()
         move_velocity = g_msgs.Twist()
         move_velocity.angular.z = 0.42
-        res = self.find_ball_client()
+        res = self.find_ball_client(False)
         x = res.z
         y = -res.x
         theta = -res.theta
@@ -48,7 +49,7 @@ class find_volleyball(object):
         flag = 0
         while not rospy.is_shutdown() and not has_ball:
             self.cmd_vel_pub.publish(move_velocity)
-            res = self.find_ball_client()
+            res = self.find_ball_client(False)
             x = res.z
             y = -res.x
             theta = -res.theta
@@ -67,7 +68,7 @@ class find_volleyball(object):
         self.find_ball_client.wait_for_service()
         move_velocity = g_msgs.Twist()
         move_velocity.angular.z = -0.38
-        res = self.find_ball_client()
+        res = self.find_ball_client(False)
         x = res.z
         y = -res.x
         theta = -res.theta
@@ -77,7 +78,7 @@ class find_volleyball(object):
         flag = 0
         while not rospy.is_shutdown() and not has_ball:
             self.cmd_vel_pub.publish(move_velocity)
-            res = self.find_ball_client()
+            res = self.find_ball_client(False)
             x = res.z
             y = -res.x
             theta = -res.theta
@@ -94,7 +95,7 @@ class find_volleyball(object):
     #直接获取球位置信息
     def find_ball(self):
         self.find_ball_client.wait_for_service()
-        res = self.find_ball_client()
+        res = self.find_ball_client(False)
         x = res.z
         y = -res.x
         theta = -res.theta
@@ -104,14 +105,14 @@ class find_volleyball(object):
     #直接获取排球的位置
     def find_volleyball(self):
         self.find_ball_client.wait_for_service()
-        res = self.find_ball_client()
+        res = self.find_ball_client(False)
         x = res.z
         y = -res.x
         theta = -res.theta
         if_volleyball = res.if_volleyball
         r = rospy.Rate(50)
         while not if_volleyball == True:
-            res = self.find_ball_client()
+            res = self.find_ball_client(False)
             x = res.z
             y = -res.x
             theta = -res.theta
@@ -129,7 +130,7 @@ class find_volleyball(object):
         move_vel.linear.y = self.move_speed*symbol_y
         move_vel.angular.z = 100*math.atan2(self.move_speed/100,radius)*symbol_w
 
-        res = self.find_ball_client()
+        res = self.find_ball_client(False)
         x = res.z
         y = -res.x
         theta = -res.theta
@@ -137,7 +138,7 @@ class find_volleyball(object):
         r = rospy.Rate(50)
         while not rospy.is_shutdown():
             self.cmd_vel_pub.publish(move_vel)
-            res = self.find_ball_client()
+            res = self.find_ball_client(False)
             x = res.z
             y = -res.x
             theta = -res.theta

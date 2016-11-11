@@ -108,6 +108,11 @@ class low_speed_linear_move(object):
         else:
             self.start_run(x, y,yaw)
 
+    #提供给外部改变直线移动速度的接口
+    #def set_linear_speed(self,speed = 0):
+    #    self.speed = speed;
+
+
     def normalize_angle(self, angle):
     #将目标角度转换成-2pi到2pi之间
         while angle > math.pi:
@@ -117,32 +122,26 @@ class low_speed_linear_move(object):
         print('current angular is %s'%angle)
         return  angle
     def cal_speed(self, dis, goal, vx=0.0, vy=0.0):
-        #加速部分所占整个流程的百分比
         shit_begin = 0.12
-        #减速部分所占整个流程的百分比
-        shit_end = 0.25
+        shit_end = 0.2
         s = math.sqrt(vx*vx+vy*vy)
-        #这个0.03是为了防止开始速度太小导致轮子锁死
         dx = 0.03*vx/s
         dy = 0.03*vy/s
-        #匀加速阶段
         if dis < shit_begin*goal:
             k = dis/(shit_begin*goal)
             return (k*vx+dx,k*vy+dy)
-        #匀速阶段
         elif dis <(1-shit_end)*goal:
             return (vx+dx, vy+dy)
-        #匀减速阶段
         else:
-            k = abs(goal - dis)/(shit_end*goal)
+            k = (goal - dis)/(shit_end*goal)
             return (k*vx+dx, k*vy+dy)
 
 
 if __name__ == '__main__':
     rospy.init_node('linear_move')
     move_cmd = low_speed_linear_move()
-    move_cmd.move_to( x = 1, y=0)
+    move_cmd.move_to( x = 0, y=1)
     rospy.sleep(1.5)
-    move_cmd.move_to(x= 1,y=0)
+    move_cmd.move_to(x= 0,y=-1)
 
 sys.path.remove(config.robot_state_pkg_path)

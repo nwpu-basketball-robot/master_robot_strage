@@ -20,9 +20,9 @@ second_mode_dis = 1.2
 # gamma 影响插值曲线上的最大速度
 GAMMA = velocity_max
 #插值起始速度等于 gamma/(1+beta）
-START_BETA =   24
+START_BETA =   22
 # alpha 影响达到最大速度的自变量的值 alpha越大,越快达到最大速度
-START_ALPHA =22
+START_ALPHA =27
 #结束时的参数
-END_BETA = 27
-END_ALPHA = 18
+END_BETA = 15
+END_ALPHA = 10

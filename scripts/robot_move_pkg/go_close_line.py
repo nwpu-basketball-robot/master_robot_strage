@@ -31,21 +31,27 @@ class move_to_home(object):
     #即流程1：接近边线
     def go_close_line(self):
         (x,theta,if_close_line) = self.close_line_cmd.find_line()
+        flag = 0;
         r = rospy.Rate(50)
         move_velocity = g_msgs.Twist()
+
         move_velocity.linear.x = 0.3
+
         while not rospy.is_shutdown():
             (x,theta,if_close_line) = self.close_line_cmd.find_line()
             self.cmd_move_pub.publish(move_velocity)
             if x != 0:
+                flag = flag + 1;
+            if flag >= 3:
                 self.brake()
                 break
             r.sleep()
         self.correct_angle()
         self.go_to_home()
         #机器检测完回家框后停下来的位置和场地条件关系很大，一下所走的x,y值根据具体场地进行修改
-        self.robot_move.move_to(y = -0.6)
-        self.robot_move.move_to(x = 1.3)
+        self.robot_move.move_to(y = -0.50)
+        self.robot_move.move_to(x = 0.85)
+
 
     #流程2：修正角度
     #备注：修正角度中需考虑图像数据获取延时的问题
@@ -62,7 +68,8 @@ class move_to_home(object):
             (x,theta,if_close_line) = self.close_line_cmd.find_line()
             self.cmd_move_pub.publish(move_velocity)
             #修正角度的范围可根据实际情况调整
-            if theta < 0.03 and theta > -0.03:
+
+            if theta < 0.02 and theta > -0.02:
                 rospy.loginfo("will Stop!!!!!!!!!!")
                 self.brake()
                 break
@@ -76,7 +83,6 @@ class move_to_home(object):
         move_velocity = g_msgs.Twist()
         while not rospy.is_shutdown():
             (x,theta,if_close_line) = self.close_line_cmd.find_line()
-
             move_velocity.linear.y = -0.3
             self.cmd_move_pub.publish(move_velocity)
             rospy.loginfo("python: y = %s",move_velocity.linear.y)
