@@ -99,6 +99,7 @@
 		<p>&nbsp;&nbsp;&nbsp;尚未进行大量测试</p>
 	<ul>
 </p>
+<p><font size="5px">2016比赛时代码</font></p>
 <p>
 	<ul>
 		<li>move_a_distance:</li>
@@ -121,65 +122,24 @@
 		<p>&nbsp;&nbsp;&nbsp;测试无误</p>
 	<ul>
 </p>
-<body lang="zh-CN" text="#00000a" dir="ltr">
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%"><font size="4" style="font-size: 16pt">运行方法：
-</font>
-</p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%">  <font size="4" style="font-size: 15pt">传球项目：</font>
-</p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%"><font face="Liberation Serif, serif"><span lang="en-US">	sudo
-chmod 0777 /dev/ttyUSB0 (</span></font>打开串口<font face="Liberation Serif, serif"><span lang="en-US">)
-</span></font>
-</p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%">       
-<font face="Liberation Serif, serif"><span lang="en-US">roslaunch
-basketball_bringup start_robot.launch </span></font>（打开相关节点）
-</p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%">       
-<font face="Liberation Serif, serif"><span lang="en-US">rosrun
-basketball_catchone_srv findBall (</span></font>打开寻找篮球的图像服务<font face="Liberation Serif, serif"><span lang="en-US">)	
-</span></font>
-</p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%"><font face="Liberation Serif, serif"><span lang="en-US">	rosrun
-lineing findline (</span></font>打开检测边线的图像服务<font face="Liberation Serif, serif"><span lang="en-US">)
-</span></font>
-</p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%"><font face="Liberation Serif, serif"><span lang="en-US">	rosrun
-basketball_strage pass_ball_&gt;&gt;&gt; </span></font>（最后为具体的状态机文件，运行状态机）
-</p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%"><br>
-</p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%">  <font size="4" style="font-size: 15pt">投篮项目：</font>
-</p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%">       
-<font face="Liberation Serif, serif"><span lang="en-US">sudo chmod
-0777 /dev/ttyUSB0 (</span></font>打开串口<font face="Liberation Serif, serif"><span lang="en-US">)
-</span></font>
-</p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%"><font face="Liberation Serif, serif"><span lang="en-US">	roslaunch
-basketball_bringup start_robot.launch </span></font>（打开相关节点）
-</p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%">       
-<font face="Liberation Serif, serif"><span lang="en-US">rosrun
-volleyball_detect findvolleyball </span></font>（打开寻找排球的图像服务）
-</p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%"><font face="Liberation Serif, serif"><span lang="en-US">	rosrun
-cylinder_detector findcylinder  </span></font>（打开检测定位柱的图像服务）
-</p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%"><font face="Liberation Serif, serif"><span lang="en-US">	rosrun
-basketball_strage shoot_ball_&gt;&gt;&gt; </span></font>（最后为具体的状态机文件，运行状态机）
-</p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%"><br>
-</p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%"><font size="4" style="font-size: 15pt">注意：</font></p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%"><font face="Liberation Serif, serif"><span lang="en-US">	</span></font>调试时建议打开里程数据，检测陀螺仪数据是否正常
-</p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%"><font face="Liberation Serif, serif"><span lang="en-US">		rostopic
-echo /RecvData/1 </span></font>
-</p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%"><br>
-</p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%"><font face="Liberation Serif, serif"><span lang="en-US">	</span></font>或者直接运行界面，通过界面点击运行。
-</p>
-<p class="cjk" style="margin-bottom: 0cm; line-height: 100%"><font face="Liberation Serif, serif"><span lang="en-US">		rosrun
-rqt_control rqtControl.py</span></font></p>
+
+运行方法：
+  传球项目：
+	sudo chmod 0777 /dev/ttyUSB0 (打开串口)
+        roslaunch basketball_bringup start_robot.launch （打开相关节点）
+        rosrun basketball_catchone_srv findBall (打开寻找篮球的图像服务)	
+	rosrun lineing findline (打开检测边线的图像服务)
+	rosrun basketball_strage pass_ball_>>> （最后为具体的状态机文件，运行状态机）
+
+  投篮项目：
+        sudo chmod 0777 /dev/ttyUSB0 (打开串口)
+	roslaunch basketball_bringup start_robot.launch （打开相关节点）
+        rosrun volleyball_detect findvolleyball （打开寻找排球的图像服务）
+	rosrun cylinder_detector findcylinder  （打开检测定位柱的图像服务）
+	rosrun basketball_strage shoot_ball_>>> （最后为具体的状态机文件，运行状态机）
+
+  注意：建议打开里程数据，检测陀螺仪数据是否正常
+	rostopic echo /RecvData/1 
+
+或者直接运行界面，通过界面点击运行。
+	rosrun rqt_control rqtControl.py
