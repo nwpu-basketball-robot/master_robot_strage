@@ -3,7 +3,7 @@
 #robot_state_pkg_path = os.path.abspath(os.path.join(os.path.dirname("__file__"), os.path.pardir))
 #用于加载自己写的模块,请将它改为自己的相应模块
 
-robot_state_pkg_path = '/home/mrxu/basketball/src/basketball_strage/scripts/'
+robot_state_pkg_path = '/home/hyx/basketball_ws/src/basketball_strage/scripts/'
 #import sys
 #robot_state_pkg_path = sys.path[0][0:sys.path[0].index('/robot')]
 # WARNING!!!!!!!!!!!!!!!! 发下去的速度不要超过 0.8右
